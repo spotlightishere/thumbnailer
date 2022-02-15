@@ -7,7 +7,6 @@ import (
 	"github.com/oracle/oci-go-sdk/v57/common/auth"
 	"github.com/oracle/oci-go-sdk/v57/objectstorage"
 	"io"
-	"os"
 )
 
 func main() {
@@ -15,13 +14,19 @@ func main() {
 }
 
 // bucketName returns the name of the bucket as provided within config.
-func bucketName() string {
-	name := os.Getenv("BUCKET_NAME")
+func bucketName(ctx context.Context) *string {
+	name := fdk.GetContext(ctx).Config()["BUCKET_NAME"]
 	if name == "" {
 		panic("no bucket name provided")
 	}
 
-	return name
+	return &name
+}
+
+// namespaceName retrieves the current namespace from the context.
+func namespaceName(ctx context.Context) *string {
+	name := ctx.Value("NamespaceName").(string)
+	return &name
 }
 
 // mediaId returns the current media ID from the context.
@@ -36,20 +41,26 @@ type ResponseFormat struct {
 
 // generateThumbnails is our main request handler.
 func generateThumbnails(ctx context.Context, in io.Reader, out io.Writer) {
-	// Generate a media ID.
-	mediaCtx := context.WithValue(ctx, "MediaId", RandStringBytesMaskImprSrc(16))
-
-	// Now, attempt to read our supposed image.
-	// We only want to read up to 10 megabytes - our imposed maximum.
-	// As a bonus, we read directly to the image - format issues will be instantly exposed.
-	img := decodeImage(in)
-
 	// Authenticate to obtain a usable client with our storage bucket.
 	provider, err := auth.ResourcePrincipalConfigurationProvider()
 	DieIfErr(err)
 	client, err := objectstorage.NewObjectStorageClientWithConfigurationProvider(provider)
 	DieIfErr(err)
 
+	// Generate a media ID.
+	mediaCtx := context.WithValue(ctx, "MediaId", RandStringBytesMaskImprSrc(16))
+
+	// Get the current storage namespace.
+	namespace, err := client.GetNamespace(ctx, objectstorage.GetNamespaceRequest{})
+	DieIfErr(err)
+	mediaCtx = context.WithValue(mediaCtx, "NamespaceName", *namespace.Value)
+
+	// Now, attempt to read our supposed image.
+	// We only want to read up to 10 megabytes - our imposed maximum.
+	// As a bonus, we read directly to the image - format issues will be instantly exposed.
+	img := decodeImage(in)
+
+	// Generate!
 	generateVariants(mediaCtx, client, img)
 
 	// We're all good!

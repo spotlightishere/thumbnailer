@@ -8,7 +8,7 @@ import (
 	"golang.org/x/image/draw"
 	"image"
 	"image/png"
-
+	"io/ioutil"
 	// Acceptable image formats
 	_ "image/gif"
 	_ "image/jpeg"
@@ -28,17 +28,18 @@ func decodeImage(in io.Reader) image.Image {
 }
 
 // encodeImage encodes the passed image as a PNG and returns its bytes.
-func encodeImage(img image.Image) []byte {
-	var buf *bytes.Buffer
+func encodeImage(img image.Image) *bytes.Buffer {
+	buf := new(bytes.Buffer)
 	err := png.Encode(buf, img)
 	DieIfErr(err)
-	return buf.Bytes()
+	return buf
 }
 
 // generateVariants generates an original sized image, half sized and thumbnail image as a PNG.
 func generateVariants(ctx context.Context, client objectstorage.ObjectStorageClient, img image.Image) {
 	// Output this current image in its original form PNG.
 	original := encodeImage(img)
+
 	uploadImage(ctx, client, "", original)
 
 	// Resize to half its width or height, whatever comes first.
@@ -78,14 +79,15 @@ func resize(origImage image.Image, maxWidth int, maxHeight int) image.Image {
 }
 
 // uploadImage uploads the given file to the bucket provider for the given media ID.
-func uploadImage(ctx context.Context, client objectstorage.ObjectStorageClient, attributes string, contents []byte) {
+func uploadImage(ctx context.Context, client objectstorage.ObjectStorageClient, attributes string, contents *bytes.Buffer) {
 	id := mediaId(ctx)
 	filename := fmt.Sprintf("%s/%s%s.png", id, attributes, id)
-	name := bucketName()
 
 	_, err := client.PutObject(ctx, objectstorage.PutObjectRequest{
-		BucketName: &name,
-		ObjectName: &filename,
+		NamespaceName: namespaceName(ctx),
+		BucketName:    bucketName(ctx),
+		ObjectName:    &filename,
+		PutObjectBody: ioutil.NopCloser(contents),
 	})
 	DieIfErr(err)
 }
