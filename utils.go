@@ -33,3 +33,9 @@ func RandStringBytesMaskImprSrc(n int) string {
 
 	return string(b)
 }
+
+func DieIfErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}

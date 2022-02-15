@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/v57/example/helpers"
 	"github.com/oracle/oci-go-sdk/v57/objectstorage"
 	"golang.org/x/image/draw"
 	"image"
@@ -23,7 +22,7 @@ import (
 // decodeImage decodes a passed image, up to 10 MiB.
 func decodeImage(in io.Reader) image.Image {
 	img, _, err := image.Decode(io.LimitReader(in, 10*1024*1024))
-	helpers.FatalIfError(err)
+	DieIfErr(err)
 
 	return img
 }
@@ -32,7 +31,7 @@ func decodeImage(in io.Reader) image.Image {
 func encodeImage(img image.Image) []byte {
 	var buf *bytes.Buffer
 	err := png.Encode(buf, img)
-	helpers.FatalIfError(err)
+	DieIfErr(err)
 	return buf.Bytes()
 }
 
@@ -88,5 +87,5 @@ func uploadImage(ctx context.Context, client objectstorage.ObjectStorageClient, 
 		BucketName: &name,
 		ObjectName: &filename,
 	})
-	helpers.FatalIfError(err)
+	DieIfErr(err)
 }

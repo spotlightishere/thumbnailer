@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	fdk "github.com/fnproject/fdk-go"
 	"github.com/oracle/oci-go-sdk/v57/common/auth"
-	"github.com/oracle/oci-go-sdk/v57/example/helpers"
 	"github.com/oracle/oci-go-sdk/v57/objectstorage"
 	"io"
 	"os"
@@ -29,6 +29,11 @@ func mediaId(ctx context.Context) string {
 	return ctx.Value("MediaId").(string)
 }
 
+// ResponseFormat dictates what we'll write back on success.
+type ResponseFormat struct {
+	MediaID string `json:"id"`
+}
+
 // generateThumbnails is our main request handler.
 func generateThumbnails(ctx context.Context, in io.Reader, out io.Writer) {
 	// Generate a media ID.
@@ -41,10 +46,15 @@ func generateThumbnails(ctx context.Context, in io.Reader, out io.Writer) {
 
 	// Authenticate to obtain a usable client with our storage bucket.
 	provider, err := auth.ResourcePrincipalConfigurationProvider()
-	helpers.FatalIfError(err)
+	DieIfErr(err)
 	client, err := objectstorage.NewObjectStorageClientWithConfigurationProvider(provider)
-	helpers.FatalIfError(err)
+	DieIfErr(err)
 
 	generateVariants(mediaCtx, client, img)
-	out.Write([]byte("We did it!"))
+
+	// We're all good!
+	response := ResponseFormat{
+		MediaID: mediaId(mediaCtx),
+	}
+	json.NewEncoder(out).Encode(response)
 }
