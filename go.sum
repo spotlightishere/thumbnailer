@@ -4,6 +4,8 @@ github.com/fnproject/fdk-go v0.0.15 h1:LYCrUFW+j6cPjQdWiwWHRB40ma6+6osqgyfPp/u0i
 github.com/fnproject/fdk-go v0.0.15/go.mod h1:I1vcgeMhAypxJ4pxIgq/pERZJvmanYYSlZaScO+oSps=
 github.com/oracle/oci-go-sdk/v57 v57.0.0 h1:G7/rA9kpB4+NJRowQaSeEbsaIVXJ/eu7rIrp8LuiSDs=
 github.com/oracle/oci-go-sdk/v57 v57.0.0/go.mod h1:g/8HesuNLeyzLQMkXthYFmWKVM+AFjAy96e3ZpXmIb0=
+github.com/oracle/oci-go-sdk/v58 v58.0.0 h1:DvAK8P3WxwYmzLl5wL5stxrdbJ6AqlnxST4k+4B2J4g=
+github.com/oracle/oci-go-sdk/v58 v58.0.0/go.mod h1:iZ1lRt9f1CMGDsOr0ZLbJCmX8Oz5gxIRuu1oI9tqoko=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/sony/gobreaker v0.4.2-0.20210216022020-dd874f9dd33b h1:br+bPNZsJWKicw/5rALEo67QHs5weyD5tf8WST+4sJ0=

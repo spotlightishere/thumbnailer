@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/v57/objectstorage"
+	"github.com/oracle/oci-go-sdk/v58/objectstorage"
 	"golang.org/x/image/draw"
 	"image"
 	"image/png"
@@ -79,15 +79,15 @@ func resize(origImage image.Image, maxWidth int, maxHeight int) image.Image {
 }
 
 // uploadImage uploads the given file to the bucket provider for the given media ID.
-func uploadImage(ctx context.Context, client objectstorage.ObjectStorageClient, attributes string, contents *bytes.Buffer) {
+func uploadImage(ctx context.Context, client objectstorage.ObjectStorageClient, attributes string, buf *bytes.Buffer) {
 	id := mediaId(ctx)
-	filename := fmt.Sprintf("%s/%s%s.png", id, attributes, id)
+	filename := fmt.Sprintf("%s/%s%s.png", id, id, attributes)
 
 	_, err := client.PutObject(ctx, objectstorage.PutObjectRequest{
 		NamespaceName: namespaceName(ctx),
 		BucketName:    bucketName(ctx),
 		ObjectName:    &filename,
-		PutObjectBody: ioutil.NopCloser(contents),
+		PutObjectBody: ioutil.NopCloser(buf),
 	})
 	DieIfErr(err)
 }
