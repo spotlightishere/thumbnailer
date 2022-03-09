@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	fdk "github.com/fnproject/fdk-go"
-	"github.com/oracle/oci-go-sdk/v58/common/auth"
-	"github.com/oracle/oci-go-sdk/v58/objectstorage"
+	"github.com/oracle/oci-go-sdk/v61/common/auth"
+	"github.com/oracle/oci-go-sdk/v61/objectstorage"
 	"io"
 )
 
